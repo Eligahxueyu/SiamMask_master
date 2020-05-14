@@ -102,5 +102,43 @@
 ![](image/refine1.png)
 
 
+# 6. 模型训练train
+* 网络的训练的实现在文件夹tools中，主要分为siammaskbase网络和siammasksharp网络的训练，在训练时我们首先训练base网络，然后对掩膜细化的refine网络进行训练，因为训练流程是类似的我们以trian_siammask.py为例给大家介绍。该文件中包含的内容如下图所示：
+![](image/train.png)
+
+## 6.1 main
+* main是函数主入口，主要做了一些config文件，路径以及log的操作（这些操作都是从命令行获得的，或者从命令行带有的文件里得到的参数等），接下来是根据配置信息加载数据：build_data_loader(cfg)；然后是进行模型加载，最后调用train进行模型训练,如下图所示：
+![](image/main.png)
+
+## 6.2 数据集获取
+* 数据集获取通过build_data_loader函数获取，流程如下所述：
+![](image/数据获取.png)
+
+## 6.3 base网络训练
+* 分类的损失：
+![](image/分类损失.png)
+
+* 定位的损失：
+![](image/定位损失.png)
+
+* 分割的损失：
+![](image/分割损失.png)
+
+## 6.4 refine模块的训练
+* 分类的损失：
+![](image/分类损失1.png)
+
+* 定位的损失：
+![](image/定位损失1.png)
+
+* 分割的损失：
+![](image/分割损失1.png)
 
 
+# 7. 网络测试test
+* 网络的测试test主要在tools中test.py中实现，该文件中包含的内容如下图所示： 
+![](image/test.png)
+
+# 7.1 main
+* main函数是进行网络训练的程序入口，它的执行流程是读取配置信息->设置日志输出到日志文件中->加载网络模型->加载权重文件->加载数据->进行跟踪，在进行跟踪时，还要判断是否进行目标分割，如下图所示：
+![](image/test_mian.png)
