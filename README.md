@@ -50,4 +50,57 @@
 * 2、只需要给出标定框，后续的搜索范围往往在上一帧图像的附近。
 * 孪生网络是使用深度学习进行目标追踪的重要解决方案，主要包括：孪生网络解决目标追踪开山之作SiamFC、SiamRPN、DaSiamRPN、SiamRPN++，SiamMask
 
+# 4.数据构建DataSet
+## 4.1 初始化
+* 初始化主要是参数的设置，主要包括以下内容：
+![](image/初始化.png)
+
+## 4.2 辅助函数
+* 辅助函数主要图像读取，数据查找等。
+
+## 4.3 数据构建
+* 数据构建完成了训练数据的构建，通过getItems完成，主要流程是：
+![](image/数据构建.png)
+
+# 5. 模型的构建model
+## 5.1 网络结构
+* SiamMask网络的实现包含两部分：分别是SiamMask_base 和SiamMask_sharp。其中SiamMask_base是基础模块，与SiamMask_base模块相比，SiamMask_sharp中增加了进行掩膜细化的refine模块。网络结构如下图所示：
+![](image/模型.png)
+
+* 掩膜细化的模块如下图所示：
+![](image/掩膜细化.png)
+
+## 5.2 custom
+* custom是整个网络的载体，分别有siammask的基础网络和siammask_sharp的网络结构，其中增加了处理 mask的相关函数。
+* custom.py文件中的架构如下所示： 
+![](image/custom.png)
+
+## 5.3 ResDowns
+* ResDowns表示在resNet50特征提取后面的adjust操作，仅在ResDown中调用，如下图中红框中所示： 
+![](image/ResDowns.png)
+
+## 5.4 ResDown
+* ResDown是网络的特征提取层，对应图中的ResNet50和adjust，如下图所示:
+![](image/ResDown.png)
+
+## 5.5 up
+* up(rpn)是边框回归和分类网络，实现过程调用DepthCorr对象，DepthCorr对象是在rpn.py中实现的，其逐通道进行相关性计算，得到相应的响应，根据该响应得到目标的分类结果检测位置。
+* 该部分对应于下图中方框内部分：
+![](image/up.png)
+
+## 5.6 MaskCorr
+* mask分支网络，同样调用DepthCorr对象，输入为256，输出为63*63通道数:
+![](image/MaskCorr.png)
+
+* 网络结构如下红框中所示：
+![](image/MaskCorr1.png)
+
+## 5.7 refine
+* refine模块是掩膜细化模块，主要在siammasksharp中使用个，siammaskbase中没有使用，该模块主要用于目标的掩膜细化，如下图中红框所示： 
+![](image/refine.png)
+* 具体到U2,U3,U4,我们以U3为例展示如下：蓝色底框中即为掩膜的改进模块：
+![](image/refine1.png)
+
+
+
 
